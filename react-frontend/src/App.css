@@ -83,6 +83,91 @@
   padding-bottom: 10px;
 }
 
+.create-user-section {
+  margin-bottom: 20px;
+  padding: 18px;
+  background: #f7f9ff;
+  border-radius: 12px;
+  border: 1px solid #e4e8ff;
+}
+
+.create-user-section h3 {
+  margin: 0 0 14px;
+  color: #334155;
+  font-size: 1.1rem;
+}
+
+.create-user-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: center;
+}
+
+.create-user-form input {
+  padding: 12px 14px;
+  border: 1px solid #dbe2ff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background: white;
+}
+
+.create-user-form input:focus,
+.create-task-form input:focus,
+.create-task-form select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+}
+
+.create-task-section {
+  margin-bottom: 20px;
+  padding: 18px;
+  background: #f7f9ff;
+  border-radius: 12px;
+  border: 1px solid #e4e8ff;
+}
+
+.create-task-section h3 {
+  margin: 0 0 14px;
+  color: #334155;
+  font-size: 1.1rem;
+}
+
+.create-task-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  align-items: center;
+}
+
+.create-task-form input,
+.create-task-form select {
+  padding: 12px 14px;
+  border: 1px solid #dbe2ff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background: white;
+}
+
+.create-btn {
+  padding: 12px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(102, 126, 234, 0.2);
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;

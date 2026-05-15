@@ -3,6 +3,7 @@ package com.developer.test.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,17 +23,35 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         long startTime = System.currentTimeMillis();
+        Exception exception = null;
 
         try {
             filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            exception = ex;
+            throw ex;
         } finally {
             long duration = System.currentTimeMillis() - startTime;
+            int status = response.getStatus();
+            if (exception != null && status < 400) {
+                status = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            }
 
-            logger.info("METHOD: {} | PATH: {} | STATUS: {} | DURATION: {}ms",
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    response.getStatus(),
-                    duration);
+            if (exception != null) {
+                logger.error("request.method={} request.path={} response.status={} response.duration_ms={} error.message={}",
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        status,
+                        duration,
+                        exception.getMessage(),
+                        exception);
+            } else {
+                logger.info("request.method={} request.path={} response.status={} response.duration_ms={}",
+                        request.getMethod(),
+                        request.getRequestURI(),
+                        status,
+                        duration);
+            }
         }
     }
 }

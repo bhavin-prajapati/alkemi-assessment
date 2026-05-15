@@ -20,7 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.util.Arrays.stream;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api-disabled")
+@Deprecated
 public class ApiController {
 
     @Autowired

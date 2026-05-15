@@ -53,7 +53,10 @@ public class DataStore {
      */
     public void addUser(User user) {
         if (user.getId() == 0) {
-            user.setId(nextUserId.getAndIncrement());
+            int maxId = users.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+            int nextId = Math.max(nextUserId.get(), maxId + 1);
+            user.setId(nextId);
+            nextUserId.set(nextId + 1);
         }
         this.users.put(user.getId(), user);
     }
@@ -98,6 +101,10 @@ public class DataStore {
 
     public User getUserById(int id) {
         return users.get(id);
+    }
+
+    public Task getTaskById(int id) {
+        return tasks.get(id);
     }
 
     public List<Task> getTasks(String status, String userId) {

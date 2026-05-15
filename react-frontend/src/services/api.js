@@ -56,6 +56,16 @@ export const getUsers = async () => {
   return response.data
 }
 
+export const createUser = async (user) => {
+  const response = await apiClient.post('/api/users', user)
+  return response.data
+}
+
+export const createTask = async (task) => {
+  const response = await apiClient.post('/api/tasks', task)
+  return response.data
+}
+
 export const getUserById = async (id) => {
   const response = await apiClient.get(`/api/users/${id}`)
   return response.data

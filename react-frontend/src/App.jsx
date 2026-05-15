@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { getUsers, getUserById, getTasks, getStats, checkHealth } from './services/api'
+import { getUsers, createUser, createTask, getUserById, getTasks, getStats, checkHealth } from './services/api'
 import UserList from './components/UserList'
 import TaskList from './components/TaskList'
 import Stats from './components/Stats'
@@ -16,6 +16,12 @@ function App() {
   const [selectedUserId, setSelectedUserId] = useState(null)
   const [selectedUser, setSelectedUser] = useState(null)
   const [taskFilter, setTaskFilter] = useState('')
+  const [newUserName, setNewUserName] = useState('')
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserRole, setNewUserRole] = useState('')
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [newTaskStatus, setNewTaskStatus] = useState('pending')
+  const [newTaskUserId, setNewTaskUserId] = useState('')
 
   useEffect(() => {
     loadInitialData()
@@ -80,6 +86,64 @@ function App() {
     }
   }
 
+  const handleCreateUser = async () => {
+    if (!newUserName.trim() || !newUserEmail.trim() || !newUserRole.trim()) {
+      setError('Name, email, and role are required to create a user.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    try {
+      const createdUser = await createUser({
+        name: newUserName.trim(),
+        email: newUserEmail.trim(),
+        role: newUserRole.trim(),
+      })
+      setUsers((prevUsers) => [createdUser, ...prevUsers])
+      setNewUserName('')
+      setNewUserEmail('')
+      setNewUserRole('')
+    } catch (err) {
+      setError(err.message || 'Failed to create user')
+      console.error('Error creating user:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCreateTask = async () => {
+    if (!newTaskTitle.trim() || !newTaskStatus.trim() || !newTaskUserId.trim()) {
+      setError('Title, status, and user ID are required to create a task.')
+      return
+    }
+
+    const userIdNumber = Number(newTaskUserId)
+    if (!userIdNumber || userIdNumber <= 0) {
+      setError('User ID must be a positive number.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    try {
+      const createdTask = await createTask({
+        title: newTaskTitle.trim(),
+        status: newTaskStatus.trim(),
+        userId: userIdNumber,
+      })
+      setTasks((prevTasks) => [createdTask, ...prevTasks])
+      setNewTaskTitle('')
+      setNewTaskStatus('pending')
+      setNewTaskUserId('')
+    } catch (err) {
+      setError(err.message || 'Failed to create task')
+      console.error('Error creating task:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleRefresh = () => {
     setSelectedUserId(null)
     setSelectedUser(null)
@@ -111,6 +175,32 @@ function App() {
         <div className="data-section">
           <div className="panel">
             <h2>Users</h2>
+            <div className="create-user-section">
+              <h3>Create New User</h3>
+              <div className="create-user-form">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Role"
+                  value={newUserRole}
+                  onChange={(e) => setNewUserRole(e.target.value)}
+                />
+                <button className="create-btn" onClick={handleCreateUser}>
+                  Create
+                </button>
+              </div>
+            </div>
             {loading && !users.length ? (
               <div className="loading">Loading users...</div>
             ) : (
@@ -159,6 +249,34 @@ function App() {
                   onClick={() => handleTaskFilter('completed')}
                 >
                   Completed
+                </button>
+              </div>
+            </div>
+            <div className="create-task-section">
+              <h3>Create New Task</h3>
+              <div className="create-task-form">
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                />
+                <select
+                  value={newTaskStatus}
+                  onChange={(e) => setNewTaskStatus(e.target.value)}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="User ID"
+                  value={newTaskUserId}
+                  onChange={(e) => setNewTaskUserId(e.target.value)}
+                />
+                <button className="create-btn" onClick={handleCreateTask}>
+                  Create
                 </button>
               </div>
             </div>
