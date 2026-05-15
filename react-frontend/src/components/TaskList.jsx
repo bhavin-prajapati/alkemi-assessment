@@ -1,6 +1,6 @@
 import './TaskList.css'
 
-function TaskList({ tasks }) {
+function TaskList({ tasks, onTaskSelect }) {
   if (tasks.length === 0) {
     return <div className="empty-state">No tasks found</div>
   }
@@ -21,7 +21,7 @@ function TaskList({ tasks }) {
   return (
     <div className="task-list">
       {tasks.map((task) => (
-        <div key={task.id} className="task-card">
+        <div key={task.id} className="task-card" onClick={() => onTaskSelect && onTaskSelect(task)}>
           <div className="task-header">
             <h3>{task.title}</h3>
             <span

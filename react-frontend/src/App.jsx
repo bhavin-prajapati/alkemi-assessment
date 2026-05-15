@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { getUsers, createUser, createTask, getUserById, getTasks, getStats, checkHealth } from './services/api'
+import { getUsers, createUser, createTask, getUserById, getTasks, getStats, checkHealth, updateTask } from './services/api'
 import UserList from './components/UserList'
 import TaskList from './components/TaskList'
 import Stats from './components/Stats'
@@ -22,6 +22,7 @@ function App() {
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [newTaskStatus, setNewTaskStatus] = useState('pending')
   const [newTaskUserId, setNewTaskUserId] = useState('')
+  const [selectedTask, setSelectedTask] = useState(null)
 
   useEffect(() => {
     loadInitialData()
@@ -139,6 +140,49 @@ function App() {
     } catch (err) {
       setError(err.message || 'Failed to create task')
       console.error('Error creating task:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleTaskSelect = (task) => {
+    setSelectedTask(task)
+    setNewTaskTitle(task.title || '')
+    setNewTaskStatus(task.status || 'pending')
+    setNewTaskUserId(task.userId ? String(task.userId) : '')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleUpdateTask = async () => {
+    if (!selectedTask) return
+    if (!newTaskTitle.trim() || !newTaskStatus.trim() || !newTaskUserId.trim()) {
+      setError('Title, status, and user ID are required to update a task.')
+      return
+    }
+
+    const userIdNumber = Number(newTaskUserId)
+    if (!userIdNumber || userIdNumber <= 0) {
+      setError('User ID must be a positive number.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    try {
+      const updated = await updateTask(selectedTask.id, {
+        title: newTaskTitle.trim(),
+        status: newTaskStatus.trim(),
+        userId: userIdNumber,
+      })
+      setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))
+      // clear form
+      setSelectedTask(null)
+      setNewTaskTitle('')
+      setNewTaskStatus('pending')
+      setNewTaskUserId('')
+    } catch (err) {
+      setError(err.message || 'Failed to update task')
+      console.error('Error updating task:', err)
     } finally {
       setLoading(false)
     }
@@ -275,15 +319,18 @@ function App() {
                   value={newTaskUserId}
                   onChange={(e) => setNewTaskUserId(e.target.value)}
                 />
-                <button className="create-btn" onClick={handleCreateTask}>
-                  Create
+                <button
+                  className="create-btn"
+                  onClick={selectedTask ? handleUpdateTask : handleCreateTask}
+                >
+                  {selectedTask ? 'Update' : 'Create'}
                 </button>
               </div>
             </div>
             {loading && !tasks.length ? (
               <div className="loading">Loading tasks...</div>
             ) : (
-              <TaskList tasks={tasks} />
+              <TaskList tasks={tasks} onTaskSelect={handleTaskSelect} />
             )}
           </div>
         </div>

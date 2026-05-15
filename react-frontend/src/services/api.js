@@ -85,6 +85,11 @@ export const getTaskById = async (id) => {
   return response.data
 }
 
+export const updateTask = async (id, task) => {
+  const response = await apiClient.put(`/api/tasks/${id}`, task)
+  return response.data
+}
+
 export const getStats = async () => {
   const response = await apiClient.get('/api/stats')
   return response.data
