@@ -149,7 +149,9 @@ function App() {
     setSelectedTask(task)
     setNewTaskTitle(task.title || '')
     setNewTaskStatus(task.status || 'pending')
-    setNewTaskUserId(task.userId ? String(task.userId) : '')
+    // Support multiple shapes: { userId }, { user: { id } }, or { user: { userId } }
+    const rawUserId = task.userId ?? task.user?.id ?? task.user?.userId ?? ''
+    setNewTaskUserId(rawUserId !== undefined && rawUserId !== null ? String(rawUserId) : '')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
